@@ -1,0 +1,103 @@
+services:
+    lantern-suite:
+        image: lanterndata/lantern-suite:pg15-latest
+        container_name: lantern_clap
+        # entrypoint: ["echo", "Lantern disabled"]
+        ports:
+            - 15432:5432
+            - 16432:6432
+        environment:
+            - POSTGRES_PASSWORD=postgres
+        volumes:
+            - /home/noisethanks/clapstack/scripts/init_airflow.sql:/docker-entrypoint-initdb.d/init_airflow.sql
+    redis:
+        image: 'bitnami/redis:latest'
+        container_name: redis_clap
+        entrypoint: ["echo", "Redis disabled."]
+        environment:
+            - ALLOW_EMPTY_PASSWORD=yes
+        volumes:
+            - /path/to/redis-persistence:/bitnami
+    airflow:
+        image: bitnami/airflow:latest
+        container_name: airflow_clap
+        # entrypoint: ["echo", "Airflow disabled"]
+        ports:
+            - 18080:8080
+        depends_on:
+            # - redis
+            - lantern-suite
+        environment:
+            - AIRFLOW_DATABASE_HOST=172.17.0.1
+            - AIRFLOW_DATABASE_PORT_NUMBER=15432
+            - AIRFLOW_DATABASE_NAME=airflow_db
+            - AIRFLOW_DATABASE_USERNAME=airflow
+            - AIRFLOW_DATABASE_PASSWORD=airflow_pass
+            - AIRFLOW_USERNAME=user
+            - AIRFLOW_PASSWORD=airflow
+    pytorch:
+        image: bitnami/pytorch
+        container_name: pytorch_sandbox_clap
+        entrypoint: ["/usr/bin/bash", "-c", "/usr/local/bin/pytorch_setup.sh && tail -f /dev/null"]
+        # entrypoint: ["echo", "Pytorch disabled."]
+        tty: true
+        volumes:
+            - '.:/app'
+            - /home/noisethanks/clapstack/scripts/pytorch_setup.sh:/usr/local/bin/pytorch_setup.sh
+    dozzle:
+        image: amir20/dozzle:latest
+        container_name: dozzle_clap
+        # entrypoint: ["echo", "Dozzle disabled."]
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+        ports:
+            - 19999:8080
+    dbgate:
+        image: dbgate/dbgate
+        container_name: dbgate_clap
+        # entrypoint: ["echo", "DBGate disabled."]
+        ports:
+            - 13000:3000
+        depends_on:
+            - lantern-suite
+        stdin_open: true
+        tty: true
+        restart: always
+    code-server:
+        image: lscr.io/linuxserver/code-server:latest
+        container_name: code_clap
+        # entrypoint: ["echo", "Code-server disabled."]
+        environment:
+            - PUID=1000
+            - PGID=1000
+            - TZ=Etc/UTC
+            - PASSWORD=password #optional
+            - HASHED_PASSWORD= #optional
+            - SUDO_PASSWORD=password #optional
+            - SUDO_PASSWORD_HASH= #optional
+            - PROXY_DOMAIN=code-server.my.domain #optional
+            - DEFAULT_WORKSPACE=/config/workspace #optional
+        volumes:
+            - /path/to/code-server/config:/config
+        ports:
+            - 18443:8443
+        restart: unless-stopped
+    dashy:
+        image: lissy93/dashy
+        container_name: dashy_clap
+        volumes:
+            - /home/noisethanks/clapstack/configs/dashy/conf.yml:/app/user-data/conf.yml
+        ports:
+            - 20000:8080
+        environment:
+            - NODE_ENV=production
+        restart: unless-stopped
+        healthcheck:
+          test: ['CMD', 'node', '/app/services/healthcheck']
+          interval: 1m30s
+          timeout: 10s
+          retries: 3
+          start_period: 40s
+networks:
+  clap:
+    driver: host
