@@ -2,18 +2,18 @@ services:
     lantern-suite:
         image: lanterndata/lantern-suite:pg15-latest
         container_name: lantern_clap
-        # entrypoint: ["echo", "Lantern disabled"]
+        # entrypoint: ["echo", "Lantern disabled"] # Uncomment this line to disable the container
         ports:
             - 15432:5432
             - 16432:6432
         environment:
             - POSTGRES_PASSWORD=postgres
         volumes:
-            - /home/noisethanks/clapstack/scripts/init_airflow.sql:/docker-entrypoint-initdb.d/init_airflow.sql
+            - ${PROJECT_DIR}/scripts/init_airflow.sql:/docker-entrypoint-initdb.d/init_airflow.sql
     redis:
         image: 'bitnami/redis:latest'
         container_name: redis_clap
-        entrypoint: ["echo", "Redis disabled."]
+        entrypoint: ["echo", "Redis disabled."] # Uncomment this line to disable the container
         environment:
             - ALLOW_EMPTY_PASSWORD=yes
         volumes:
@@ -21,7 +21,7 @@ services:
     airflow:
         image: bitnami/airflow:latest
         container_name: airflow_clap
-        # entrypoint: ["echo", "Airflow disabled"]
+        # entrypoint: ["echo", "Airflow disabled"] # Uncomment this line to disable the container
         ports:
             - 18080:8080
         depends_on:
@@ -38,16 +38,26 @@ services:
     pytorch:
         image: bitnami/pytorch
         container_name: pytorch_sandbox_clap
-        entrypoint: ["/usr/bin/bash", "-c", "/usr/local/bin/pytorch_setup.sh && tail -f /dev/null"]
-        # entrypoint: ["echo", "Pytorch disabled."]
+        command: ["/usr/bin/bash", "-c", "/usr/local/bin/pytorch_setup.sh && tail -f /dev/null"]
+        # entrypoint: ["echo", "Pytorch disabled."] # Uncomment this line to disable the container
+        # Uncomment the following lines to enable GPU support
+        # deploy:
+        #   resources:
+        #     reservations:
+        #       devices:
+        #         - capabilities: [gpu]
+        # runtime: nvidia
+        # environment:
+        #   - NVIDIA_VISIBLE_DEVICES=all  # Or specify GPU IDs
+        #   - NVIDIA_DRIVER_CAPABILITIES=compute,utility
         tty: true
         volumes:
             - '.:/app'
-            - /home/noisethanks/clapstack/scripts/pytorch_setup.sh:/usr/local/bin/pytorch_setup.sh
+            - ${PROJECT_DIR}/scripts/pytorch_setup.sh:/usr/local/bin/pytorch_setup.sh
     dozzle:
         image: amir20/dozzle:latest
         container_name: dozzle_clap
-        # entrypoint: ["echo", "Dozzle disabled."]
+        # entrypoint: ["echo", "Dozzle disabled."] # Uncomment this line to disable the container
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
         ports:
@@ -55,7 +65,7 @@ services:
     dbgate:
         image: dbgate/dbgate
         container_name: dbgate_clap
-        # entrypoint: ["echo", "DBGate disabled."]
+        # entrypoint: ["echo", "DBGate disabled."] # Uncomment this line to disable the container
         ports:
             - 13000:3000
         depends_on:
@@ -66,7 +76,7 @@ services:
     code-server:
         image: lscr.io/linuxserver/code-server:latest
         container_name: code_clap
-        # entrypoint: ["echo", "Code-server disabled."]
+        # entrypoint: ["echo", "Code-server disabled."] # Uncomment this line to disable the container
         environment:
             - PUID=1000
             - PGID=1000
@@ -76,17 +86,18 @@ services:
             - SUDO_PASSWORD=password #optional
             - SUDO_PASSWORD_HASH= #optional
             - PROXY_DOMAIN=code-server.my.domain #optional
-            - DEFAULT_WORKSPACE=/config/workspace #optional
+            - DEFAULT_WORKSPACE=/workspace #optional
         volumes:
-            - /path/to/code-server/config:/config
+            - ${PROJECT_DIR}/workspace:/workspace
         ports:
             - 18443:8443
         restart: unless-stopped
     dashy:
         image: lissy93/dashy
         container_name: dashy_clap
+        # entrypoint: ["echo", "Dashy disabled."] # Uncomment this line to disable the container
         volumes:
-            - /home/noisethanks/clapstack/configs/dashy/conf.yml:/app/user-data/conf.yml
+            - ${PROJECT_DIR}/configs/dashy/conf.yml:/app/user-data/conf.yml
         ports:
             - 20000:8080
         environment:
