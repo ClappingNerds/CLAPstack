@@ -13,19 +13,21 @@ services:
     redis:
         image: 'bitnami/redis:latest'
         container_name: redis_clap
-        entrypoint: ["echo", "Redis disabled."] # Uncomment this line to disable the container
+        # entrypoint: ["echo", "Redis disabled."] # Uncomment this line to disable the container
+        ports:
+            - 16379:6379
         environment:
             - ALLOW_EMPTY_PASSWORD=yes
         volumes:
-            - /path/to/redis-persistence:/bitnami
-    airflow:
+            - ${PROJECT_DIR}/redis:/bitnami
+    airflow-webserver:
         image: bitnami/airflow:latest
-        container_name: airflow_clap
+        container_name: airflow_webserver_clap
         # entrypoint: ["echo", "Airflow disabled"] # Uncomment this line to disable the container
         ports:
             - 18080:8080
         depends_on:
-            # - redis
+            - redis
             - lantern-suite
         environment:
             - AIRFLOW_DATABASE_HOST=172.17.0.1
@@ -35,25 +37,28 @@ services:
             - AIRFLOW_DATABASE_PASSWORD=airflow_pass
             - AIRFLOW_USERNAME=user
             - AIRFLOW_PASSWORD=airflow
-    pytorch:
-        image: bitnami/pytorch
-        container_name: pytorch_sandbox_clap
-        command: ["/usr/bin/bash", "-c", "/usr/local/bin/pytorch_setup.sh && tail -f /dev/null"]
-        # entrypoint: ["echo", "Pytorch disabled."] # Uncomment this line to disable the container
-        # Uncomment the following lines to enable GPU support
-        # deploy:
-        #   resources:
-        #     reservations:
-        #       devices:
-        #         - capabilities: [gpu]
-        # runtime: nvidia
-        # environment:
-        #   - NVIDIA_VISIBLE_DEVICES=all  # Or specify GPU IDs
-        #   - NVIDIA_DRIVER_CAPABILITIES=compute,utility
-        tty: true
-        volumes:
-            - '.:/app'
-            - ${PROJECT_DIR}/scripts/pytorch_setup.sh:/usr/local/bin/pytorch_setup.sh
+            - AIRFLOW_EXECUTOR=CeleryExecutor
+        # volumes:
+        #     - ${PROJECT_DIR}/airflow:/opt/bitnami/airflow
+    airflow-scheduler:
+        image: bitnami/airflow-scheduler:latest
+        container_name: airflow_scheduler_clap
+        # entrypoint: ["echo", "Airflow-scheduler disabled"] # Uncomment this line to disable the container
+        depends_on:
+            - airflow-webserver
+            - redis
+            - lantern-suite
+        environment:
+            - AIRFLOW_DATABASE_HOST=172.17.0.1
+            - AIRFLOW_DATABASE_PORT_NUMBER=15432
+            - AIRFLOW_DATABASE_NAME=airflow_db
+            - AIRFLOW_DATABASE_USERNAME=airflow
+            - AIRFLOW_DATABASE_PASSWORD=airflow_pass
+            - REDIS_HOST=172.17.0.1
+            - REDIS_PORT_NUMBER=16379
+            - AIRFLOW_WEBSERVER_HOST=172.17.0.1
+            - AIRFLOW_WEBSERVER_PORT_NUMBER=18080
+            - AIRFLOW_EXECUTOR=CeleryExecutor
     dozzle:
         image: amir20/dozzle:latest
         container_name: dozzle_clap

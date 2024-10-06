@@ -1,0 +1,1 @@
+Either copy them in or symlink them in. It will get passed into code-server and pytorch containers.

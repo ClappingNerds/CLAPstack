@@ -1,0 +1,11 @@
+[2024-10-03T16:43:59.809Z] info  code-server 4.93.1 69df01185ce2f80e99c9e4f8c8de1907cc7a9bc5
+[2024-10-03T16:43:59.810Z] info  Using user-data-dir /config/data
+[2024-10-03T16:43:59.820Z] info  Using config file /config/.config/code-server/config.yaml
+[2024-10-03T16:43:59.820Z] info  HTTP server listening on http://0.0.0.0:8443/
+[2024-10-03T16:43:59.820Z] info    - Authentication is enabled
+[2024-10-03T16:43:59.820Z] info      - Using password from $PASSWORD
+[2024-10-03T16:43:59.820Z] info    - Not serving HTTPS
+[2024-10-03T16:43:59.820Z] info    - Proxying the following domain:
+[2024-10-03T16:43:59.820Z] info      - {{port}}.code-server.my.domain
+[2024-10-03T16:43:59.820Z] info  Using proxy URI in PORTS tab: //{{port}}.code-server.my.domain
+[2024-10-03T16:43:59.820Z] info  Session server listening on /config/data/code-server-ipc.sock
