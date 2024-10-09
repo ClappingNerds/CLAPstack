@@ -1,51 +1,18 @@
 pageInfo:
-  title: Dashy
-  description: Welcome to your new dashboard!
+  title: CLAPStack
+  description: ''
   navLinks:
     - title: GitHub
-      path: https://github.com/Lissy93/dashy
+      path: https://github.com/
+      target: newtab
     - title: Documentation
       path: https://dashy.to/docs
+      target: newtab
 appConfig:
-  theme: colorful
+  theme: dracula
   layout: auto
   iconSize: medium
 sections:
-  - name: Getting Started
-    icon: fas fa-rocket
-    items:
-      - title: Dashy Live
-        description: Development a project management links for Dashy
-        icon: https://i.ibb.co/qWWpD0v/astro-dab-128.png
-        url: https://live.dashy.to/
-        target: newtab
-        id: 0_1481_dashylive
-      - title: GitHub
-        description: Source Code, Issues and Pull Requests
-        url: https://github.com/lissy93/dashy
-        icon: favicon
-        id: 1_1481_github
-      - title: Docs
-        description: Configuring & Usage Documentation
-        provider: Dashy.to
-        icon: far fa-book
-        url: https://dashy.to/docs
-        id: 2_1481_docs
-      - title: Showcase
-        description: See how others are using Dashy
-        url: https://github.com/Lissy93/dashy/blob/master/docs/showcase.md
-        icon: far fa-grin-hearts
-        id: 3_1481_showcase
-      - title: Config Guide
-        description: See full list of configuration options
-        url: https://github.com/Lissy93/dashy/blob/master/docs/configuring.md
-        icon: fas fa-wrench
-        id: 4_1481_configguide
-      - title: Support
-        description: Get help with Dashy, raise a bug, or get in contact
-        url: https://github.com/Lissy93/dashy/blob/master/.github/SUPPORT.md
-        icon: far fa-hands-helping
-        id: 5_1481_support
   - name: Links
     displayData:
       sortBy: default
@@ -62,3 +29,26 @@ sections:
         url: http://localhost:19999
         target: newtab
         id: 1_513_dozzle
+      - title: DBGate
+        description: DBGate
+        url: http://localhost:13000
+        target: newtab
+        id: 2_513_dbgate
+      - title: Portainer
+        description: Portainer
+        url: https://localhost:9443
+        target: newtab
+        id: 3_513_portainer
+  - name: Airflow
+    displayData:
+      sortBy: default
+      rows: 1
+      cols: 1
+      collapsed: false
+      hideForGuests: false
+    items:
+      - title: Web Console
+        description: Airflow web console
+        url: http://localhost:18080
+        target: newtab
+        id: 0_724_webconsole
